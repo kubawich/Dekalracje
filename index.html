@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Generator deklaracji</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='style.css'>
+    <script src="https://usefulangle.com/sitejs/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.228/pdf.min.js"></script>
+</head>
+<body>
+    <button id="upload-button">Wybierz dekalrację</button> 
+    <button id="download-image">Pobierz</button> 
+    <input type="file" id="file-to-upload" accept="application/pdf" />
+    <div id="pdf-main-container">
+        <div id="pdf-loader">Ładowanie dekalracji ...</div>
+        <div id="pdf-contents">
+            <div id="pdf-meta">
+                <div id="pdf-buttons">
+                    <button id="pdf-prev">Poprzednia strona</button>
+                    <button id="pdf-next">Następna strona</button>
+                </div>
+                <div id="page-count-container">Strona <div id="pdf-current-page"></div> z <div id="pdf-total-pages"></div></div>
+            </div>
+            
+            <canvas id="pdf-canvas" width="640"></canvas>
+            
+            <div id="page-loader">Ładowanie dekalracji ...</div>
+        </div>
+    </div>
+</body>
+<script src='main.js'></script>
+</html>
