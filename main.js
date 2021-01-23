@@ -121,10 +121,15 @@ async function showPage(page_no, zoom) {
 
 // Download button (PNG)
 $("#download-image").on('click', function() {
-	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
+	//$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
 	
 	// Specfify download option with name
-	$(this).attr('download', 'page.gif');
+    //$(this).attr('download', 'page.gif');
+    image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
+    var link = document.createElement('a');
+  link.download = "my-image.png";
+  link.href = image;
+  link.click();
 });
 
 $("#upload-button").on('click', function() {
