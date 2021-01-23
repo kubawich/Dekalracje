@@ -3,7 +3,10 @@ var _PDF_DOC,
     _TOTAL_PAGES,
     _PAGE_RENDERING_IN_PROGRESS = 0,
     _CANVAS = document.querySelector('#pdf-canvas'),
-    _CTX;
+    _CTX,
+    zoomfactorx,
+    zoomfactory,
+    _COLOR;
 
 // initialize and load the PDF
 async function showPDF(pdf_url) {
@@ -30,10 +33,9 @@ async function showPDF(pdf_url) {
 }
 
 // load and render specific page of the PDF
-async function showPage(page_no) {
+async function showPage(page_no, zoom) {
     _PAGE_RENDERING_IN_PROGRESS = 1;
     _CURRENT_PAGE = page_no;
-
     // disable Previous & Next buttons while page is being loaded
     document.querySelector("#pdf-next").disabled = true;
     document.querySelector("#pdf-prev").disabled = true;
@@ -44,6 +46,8 @@ async function showPage(page_no) {
 
     // update current page
     document.querySelector("#pdf-current-page").innerHTML = page_no;
+
+    if(_COLOR == undefined) _COLOR = 2.6;
     
     // get handle of page
     try {
@@ -76,9 +80,10 @@ async function showPage(page_no) {
     };
         
     _CTX =  _CANVAS.getContext('2d');
+
     //_CTX.rotate(45 * Math.PI / 180);
-    var zoomfactor = 1.05;
-    _CTX.setTransform(zoomfactor, 0, 0, zoomfactor, -(zoomfactor - 1) * _CANVAS.width/2, -(zoomfactor - 1) * _CANVAS.height / 2);
+    //zoomfactor = 1.05;
+    _CTX.setTransform(zoomfactorx, 0, 0, zoomfactory, -(zoomfactorx - 1) * _CANVAS.width/2, -(zoomfactory - 1) * _CANVAS.height / 2);
 
 
     // render the page contents in the canvas
@@ -88,13 +93,14 @@ async function showPage(page_no) {
     catch(error) {
         alert(error.message);
     }
+
     var imgData = _CTX.getImageData(0, 0, _CANVAS.width, _CANVAS.height);
     var d = imgData.data;
     // loop through all pixels
     // each pixel is decomposed in its 4 rgba values
     for (var i = 0; i < d.length; i += 4) {
       // get the medium of the 3 first values ( (r+g+b)/3 )
-      var med = (d[i] + d[i + 1] + d[i + 2]) / 2.6;
+      var med = (d[i] + d[i + 1] + d[i + 2]) / _COLOR;
       // set it to each value (r = g = b = med)
       d[i] = d[i + 1] = d[i + 2] = med;
       // we don't touch the alpha
@@ -102,6 +108,7 @@ async function showPage(page_no) {
     // redraw the new computed image
     _CTX.putImageData(imgData, 0, 0);
     _PAGE_RENDERING_IN_PROGRESS = 0;
+
 
     // re-enable Previous & Next buttons
     document.querySelector("#pdf-next").disabled = false;
@@ -114,10 +121,10 @@ async function showPage(page_no) {
 
 // Download button (PNG)
 $("#download-image").on('click', function() {
-	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
+	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
 	
 	// Specfify download option with name
-	$(this).attr('download', 'page.png');
+	$(this).attr('download', 'page.gif');
 });
 
 $("#upload-button").on('click', function() {
@@ -134,6 +141,27 @@ $("#file-to-upload").on('change', function() {
 
 	// Send the object url of the pdf
 	showPDF(URL.createObjectURL($("#file-to-upload").get(0).files[0]), '');
+});
+
+$("#scalex").on("input change", function() {
+    zoomfactorx =  $(this).val()
+    $('#slider_valuex').html('X: ' + $(this).val());
+    if(_PAGE_RENDERING_IN_PROGRESS == 0)
+    showPage(_CURRENT_PAGE);
+});
+
+$("#scaley").on("input change", function() {
+    zoomfactory =  $(this).val()
+    $('#slider_valuey').html('Y: ' + $(this).val());
+    if(_PAGE_RENDERING_IN_PROGRESS == 0)
+    showPage(_CURRENT_PAGE);
+});
+
+$("#color").on("input change", function() {
+    _COLOR =  $(this).val()
+    $('#color_value').html('Kolor: ' + $(this).val());
+    if(_PAGE_RENDERING_IN_PROGRESS == 0)
+    showPage(_CURRENT_PAGE);
 });
 
 // click on the "Previous" page button
