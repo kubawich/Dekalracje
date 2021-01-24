@@ -1,15 +1,21 @@
+body{
+    display: flex;
+}
+#settings-container{
+    flex-direction: column;
+}
 #show-pdf-button {
 	width: 150px;
 	display: block;
 	margin: 20px auto;
 }
 
-#file-to-upload {
+#file-to-upload, #file-to-upload-TPL  {
 	display: none;
 }
 
 #pdf-main-container {
-	width: 600px;
+    flex-direction: column;
 	margin: 20px auto;
 }
 
@@ -17,7 +23,7 @@
 	display: none;
 	text-align: center;
 	color: #999999;
-	font-size: 13px;
+	font-size: 18px;
 	line-height: 100px;
 	height: 100px;
 }
@@ -33,10 +39,6 @@
 
 #pdf-buttons {
 	float: left;
-}
-
-#page-count-container {
-	float: right;
 }
 
 #pdf-current-page {
@@ -58,5 +60,5 @@
 	text-align: center;
 	display: none;
 	color: #999999;
-	font-size: 13px;
+	font-size: 18px;
 }

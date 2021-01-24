@@ -10,30 +10,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.228/pdf.min.js"></script>
 </head>
 <body>
-    <button id="upload-button">Wybierz dekalrację</button> 
-    <button id="download-image">Pobierz</button> 
-    <input type="file" id="file-to-upload" accept="application/pdf" />
-</br>
-    <input type="range" min="1" max="1.1" step="0.0025" id="scalex" name="scalex" value="1.015">
-    <span id="slider_valuex">X: 1.015</span>
-</br>
-    <input type="range" min="1" max="1.1" step="0.0025" id="scaley" name="scaley" value="1.015">
-    <span id="slider_valuey">Y: 1.015</span>
-</br>
-<input type="range" min="2.1" max="3.1" step="0.0025" id="color" name="color" value="2.6">
-<span id="color_value">Kolor: 2.6</span>
+    <div id="settings-container">
+        <button id="upload-button">Wybierz dekalrację</button> 
+        <button id="upload-button-TPL">Wybierz TPL</button> 
+        <button id="download-image">Pobierz</button> 
+        <input type="file" id="file-to-upload" accept="application/pdf" />
+        <input type="file" id="file-to-upload-TPL"  accept="text/plain" />
+        </br>
+        <input type="range" min="1" max="1.1" step="0.0025" id="scalex" name="scalex" value="1.015">
+        <span id="slider_valuex">X: 1.015</span>
+        </br>
+        <input type="range" min="1" max="1.1" step="0.0025" id="scaley" name="scaley" value="1.015">
+        <span id="slider_valuey">Y: 1.015</span>
+        </br>
+        <input type="range" min="2.1" max="3.1" step="0.0025" id="color" name="color" value="2.5">
+        <span id="color_value">Kolor: 2.5</span>
+    </div></br>
+    <div id="TPL-container">
+        <textarea id="TPLfile">
+
+        </textarea>
+    </div>
     <div id="pdf-main-container">
         <div id="pdf-loader">Ładowanie dekalracji ...</div>
         <div id="pdf-contents">
             <div id="pdf-meta">
                 <div id="pdf-buttons">
                     <button id="pdf-prev">Poprzednia strona</button>
+                    <span id="page-count-container">Strona <div id="pdf-current-page"></div> z <div id="pdf-total-pages"></div></span>
                     <button id="pdf-next">Następna strona</button>
                 </div>
-                <div id="page-count-container">Strona <div id="pdf-current-page"></div> z <div id="pdf-total-pages"></div></div>
             </div>
             
-            <canvas id="pdf-canvas" width="640"></canvas>
+            <canvas id="pdf-canvas" height="2000px"></canvas>
             
             <div id="page-loader">Ładowanie dekalracji ...</div>
         </div>

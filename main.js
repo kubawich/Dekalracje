@@ -6,7 +6,8 @@ var _PDF_DOC,
     _CTX,
     zoomfactorx,
     zoomfactory,
-    _COLOR;
+    _COLOR,
+    _INFO;
 
 // initialize and load the PDF
 async function showPDF(pdf_url) {
@@ -19,7 +20,7 @@ async function showPDF(pdf_url) {
     catch(error) {
         alert(error.message);
     }
-
+    _INFO = await _PDF_DOC.getMetadata();
     // total pages in pdf
     _TOTAL_PAGES = _PDF_DOC.numPages;
     
@@ -33,12 +34,15 @@ async function showPDF(pdf_url) {
 }
 
 // load and render specific page of the PDF
-async function showPage(page_no, zoom) {
+async function showPage(page_no) {
     _PAGE_RENDERING_IN_PROGRESS = 1;
     _CURRENT_PAGE = page_no;
     // disable Previous & Next buttons while page is being loaded
     document.querySelector("#pdf-next").disabled = true;
     document.querySelector("#pdf-prev").disabled = true;
+    document.querySelector("#scalex").disabled = true;
+    document.querySelector("#scaley").disabled = true;
+    document.querySelector("#color").disabled = true;
 
     // while page is being rendered hide the canvas and show a loading message
     document.querySelector("#pdf-canvas").style.display = 'none';
@@ -48,6 +52,8 @@ async function showPage(page_no, zoom) {
     document.querySelector("#pdf-current-page").innerHTML = page_no;
 
     if(_COLOR == undefined) _COLOR = 2.6;
+    if(zoomfactorx == undefined) zoomfactorx = 1.015;
+    if(zoomfactory == undefined) zoomfactory = 1.015;
     
     // get handle of page
     try {
@@ -58,16 +64,16 @@ async function showPage(page_no, zoom) {
     }
 
     // original width of the pdf page at scale 1
-    var pdf_original_width = page.getViewport(1).width;
+    var pdf_original_width = page.getViewport(1).height;
     
     // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
-    var scale_required = _CANVAS.width / pdf_original_width;
+    var scale_required = _CANVAS.height / pdf_original_width;
 
     // get viewport to render the page at required scale
     var viewport = page.getViewport(scale_required) ;
 
     // set canvas height same as viewport height
-    _CANVAS.height = viewport.height;
+    _CANVAS.width = viewport.width;
 
     // setting page loader height for smooth experience
     document.querySelector("#page-loader").style.height =  _CANVAS.height + 'px';
@@ -113,6 +119,9 @@ async function showPage(page_no, zoom) {
     // re-enable Previous & Next buttons
     document.querySelector("#pdf-next").disabled = false;
     document.querySelector("#pdf-prev").disabled = false;
+    document.querySelector("#scalex").disabled = false;
+    document.querySelector("#scaley").disabled = false;
+    document.querySelector("#color").disabled = false;
 
     // show the canvas and hide the page loader
     document.querySelector("#pdf-canvas").style.display = 'block';
@@ -121,15 +130,15 @@ async function showPage(page_no, zoom) {
 
 // Download button (PNG)
 $("#download-image").on('click', function() {
-	//$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
-	
-	// Specfify download option with name
-    //$(this).attr('download', 'page.gif');
-    image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
-    var link = document.createElement('a');
-  link.download = "my-image.png";
-  link.href = image;
-  link.click();
+	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
+	console.log(_INFO.info.Title)
+    // Specfify download option with name
+    $(this).attr('download', $`{_INFO.info.Title}.gif`);
+    // image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
+    // var link = document.createElement('a');
+    // link.download = $`{info.info.Title}.gif`;
+    // link.href = image;
+    // link.click();
 });
 
 $("#upload-button").on('click', function() {
@@ -146,6 +155,15 @@ $("#file-to-upload").on('change', function() {
 
 	// Send the object url of the pdf
 	showPDF(URL.createObjectURL($("#file-to-upload").get(0).files[0]), '');
+});
+
+$("#upload-button-TPL").on('click', function() {
+	$("#file-to-upload-TPL").trigger('click');
+});
+
+// When user chooses a PDF file
+$("#file-to-upload-TPL").on('change', function() {
+	$(TPLfile).load($("#file-to-upload-TPL").get(0).files[0]);
 });
 
 $("#scalex").on("input change", function() {
@@ -180,3 +198,19 @@ document.querySelector("#pdf-next").addEventListener('click', function() {
     if(_CURRENT_PAGE != _TOTAL_PAGES)
         showPage(++_CURRENT_PAGE);
 });
+
+
+function getMousePosition(event) { 
+    let rect = _CANVAS.getBoundingClientRect(); 
+    let x = event.clientX - rect.left; 
+    let y = event.clientY - rect.top; 
+    console.log("Coordinate x: " + x,  
+                "Coordinate y: " + y); 
+} 
+
+let canvasElem = document.querySelector("canvas"); 
+  
+canvasElem.addEventListener("mousedown", function(e) 
+{ 
+    getMousePosition( e); 
+}); 
