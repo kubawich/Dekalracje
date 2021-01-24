@@ -134,12 +134,12 @@ $("#download-image").on('click', function() {
 	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
 	console.log(_INFO.info.Title)
     // Specfify download option with name
-    $(this).attr('download', 'strona.gif');
-    // image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
-    // var link = document.createElement('a');
-    // link.download = $`{info.info.Title}.gif`;
-    // link.href = image;
-    // link.click();
+    //$(this).attr('download', 'strona.gif');
+    image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
+    var link = document.createElement('a');
+    link.download = 'strona.gif';
+    link.href = image;
+    link.click();
 });
 
 $("#upload-button").on('click', function() {
