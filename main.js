@@ -131,13 +131,14 @@ async function showPage(page_no) {
 
 // Download button (PNG)
 $("#download-image").on('click', function() {
-	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
-	console.log(_INFO.info.Title)
+    $(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
+    var title = _INFO.info.Title;
+	console.log(title)
     // Specfify download option with name
     //$(this).attr('download', 'strona.gif');
     image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
     var link = document.createElement('a');
-    link.download = 'strona.gif';
+    link.download = $`{title}.gif`;
     link.href = image;
     link.click();
 });
@@ -220,10 +221,31 @@ document.querySelector("#line-next").addEventListener('click', function() {
     selectTextareaLine(document.getElementById('TPLfile'), _CURR_LINE++)
 });
 
+var newString
 function getMousePosition(event) { 
     let rect = _CANVAS.getBoundingClientRect(); 
     let x = event.clientX - rect.left; 
+    x = Math.round(x)
     let y = event.clientY - rect.top; 
+    y = Math.round(y)
+
+    if(_SELECTED){
+        var coordCheck = _SELECTED.split(' ').map(x=>x.replace(`  `,' '))[0]
+        var comment = _SELECTED.split(' ').map(x=>x.replace(`  `,' '))
+        comment = comment.slice(3);
+        comment = comment.join().replaceAll(',', ' ');
+        if(coordCheck.charAt(1) === 'X'){
+            var newCoord = _SELECTED.split(' ').map(x=>x.replace(`  `,' '))[2]
+            newCoord = x;
+             newString = coordCheck + ' ' + newCoord + comment
+        }
+        else if(coordCheck.charAt(1) === 'Y'){
+            var newCoord = _SELECTED.split(' ').map(x=>x.replace(`  `,' '))[2]
+            newCoord = y;
+             newString = coordCheck + ' ' + newCoord + comment
+        }
+    }
+
     console.log("Coordinate x: " + x,  
                 "Coordinate y: " + y); 
 }
@@ -232,14 +254,16 @@ let canvasElem = document.querySelector("canvas");
   
 canvasElem.addEventListener("mousedown", function(e) 
 { 
-    getMousePosition( e); 
+    getMousePosition(e); 
+    selectTextareaLine(document.getElementById('TPLfile'), _CURR_LINE)
 });
 
 
-
+var _SELECTED;
 function selectTextareaLine(textArea,lineNum) {
     lineNum--; // array starts at 0
     var lines = textArea.value.split("\n");
+    var allText = textArea.value;
 
     // calculate start/end
     var startPos = 0, endPos = textArea.value.length;
@@ -256,6 +280,14 @@ function selectTextareaLine(textArea,lineNum) {
         textArea.focus();
         textArea.selectionStart = startPos;
         textArea.selectionEnd = endPos;
+        _SELECTED = allText.substring(startPos, endPos)
+        if(newString){
+            _CURR_LINE--;
+            var newValueText = allText.substring(0,startPos) + newString + allText.substring(endPos, allText.length)
+            textArea.value = newValueText;
+            textArea.click();
+            newString = null
+        }
         return true;
     }
     return false;

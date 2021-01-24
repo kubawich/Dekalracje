@@ -21,6 +21,7 @@ textarea {
 }
 
 #pdf-main-container {
+    zoom: 45%;
     flex-direction: column;
 	margin: 20px auto;
 }
@@ -39,6 +40,7 @@ textarea {
 }
 
 #pdf-meta {
+    zoom: 190%;
 	overflow: hidden;
 	margin: 0 0 20px 0;
 }
