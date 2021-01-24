@@ -7,7 +7,8 @@ var _PDF_DOC,
     zoomfactorx,
     zoomfactory,
     _COLOR,
-    _INFO;
+    _INFO,
+    _CURR_LINE;
 
 // initialize and load the PDF
 async function showPDF(pdf_url) {
@@ -133,7 +134,7 @@ $("#download-image").on('click', function() {
 	$(this).attr('href', $('#pdf-canvas').get(0).toDataURL());
 	console.log(_INFO.info.Title)
     // Specfify download option with name
-    $(this).attr('download', $`{_INFO.info.Title}.gif`);
+    $(this).attr('download', 'strona.gif');
     // image = $(this).attr('href', $('#pdf-canvas').get(0).toDataURL("image/png").replace("image/png", "image/octet-stream"));
     // var link = document.createElement('a');
     // link.download = $`{info.info.Title}.gif`;
@@ -163,7 +164,17 @@ $("#upload-button-TPL").on('click', function() {
 
 // When user chooses a PDF file
 $("#file-to-upload-TPL").on('change', function() {
-	$(TPLfile).load($("#file-to-upload-TPL").get(0).files[0]);
+
+    var fr = new FileReader(); 
+    fr.onload=function(){ 
+        document.getElementById('TPLfile').textContent = fr.result; 
+        TplInterpret(fr.result);
+        selectTextareaLine(document.getElementById('TPLfile'), 1);
+        _CURR_LINE = 1;
+    } 
+      try{
+          fr.readAsText(this.files[0]); 
+      }catch(error){alert("Nie wybrano pliku")}
 });
 
 $("#scalex").on("input change", function() {
@@ -200,17 +211,76 @@ document.querySelector("#pdf-next").addEventListener('click', function() {
 });
 
 
+document.querySelector("#line-prev").addEventListener('click', function() {
+    selectTextareaLine(document.getElementById('TPLfile'), _CURR_LINE--)
+});
+
+
+document.querySelector("#line-next").addEventListener('click', function() {
+    selectTextareaLine(document.getElementById('TPLfile'), _CURR_LINE++)
+});
+
 function getMousePosition(event) { 
     let rect = _CANVAS.getBoundingClientRect(); 
     let x = event.clientX - rect.left; 
     let y = event.clientY - rect.top; 
     console.log("Coordinate x: " + x,  
                 "Coordinate y: " + y); 
-} 
+}
 
 let canvasElem = document.querySelector("canvas"); 
   
 canvasElem.addEventListener("mousedown", function(e) 
 { 
     getMousePosition( e); 
-}); 
+});
+
+
+
+function selectTextareaLine(textArea,lineNum) {
+    lineNum--; // array starts at 0
+    var lines = textArea.value.split("\n");
+
+    // calculate start/end
+    var startPos = 0, endPos = textArea.value.length;
+    for(var x = 0; x < lines.length; x++) {
+        if(x == lineNum) {
+            break;
+        }
+        startPos += (lines[x].length+1);
+    }
+    if(lineNum>=0)
+    var endPos =  lines[lineNum].length+startPos;
+
+    if(typeof(textArea.selectionStart) != "undefined") {
+        textArea.focus();
+        textArea.selectionStart = startPos;
+        textArea.selectionEnd = endPos;
+        return true;
+    }
+    return false;
+}
+
+
+var objects = new Array();
+var pair;
+function TplInterpret(tpl_content){
+    let linesWhiteSpace = tpl_content.split('\n')
+    linesWhiteSpace.splice(0,1);
+    var lines = linesWhiteSpace.filter(function(value) {return value.length > 5 })
+    lines = lines.map(x=>x.slice(1))
+    lines = lines.map(x=>x.split('//')[0])
+    lines = lines.map(x=>x.replaceAll(`"`,''))
+
+    lines = lines.map(x=>x.replace(`  `,' '))
+    for(i = 0; i < lines.length; i++){
+        var temp = lines[i].split(' ')
+        var param = temp[0]
+        var pos = temp[1]
+         pair = {param, pos}
+         objects = objects.concat(pair)
+    }
+
+    //lines.forEach(x=>console.log(objects))
+    console.log(objects)
+}

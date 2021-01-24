@@ -1,13 +1,19 @@
 body{
     display: flex;
 }
-#settings-container{
+#settings-container, #left-container{
     flex-direction: column;
 }
 #show-pdf-button {
 	width: 150px;
 	display: block;
 	margin: 20px auto;
+}
+
+textarea {
+    width: 100%;
+    height: 400px;
+    white-space: nowrap;
 }
 
 #file-to-upload, #file-to-upload-TPL  {
